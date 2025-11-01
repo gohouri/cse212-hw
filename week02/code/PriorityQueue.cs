@@ -23,15 +23,19 @@
         }
 
         // Find the index of the item with the highest priority to remove
+        // When multiple items have the same highest priority, we want the first one (FIFO)
         var highPriorityIndex = 0;
-        for (int index = 1; index < _queue.Count - 1; index++)
+        for (int index = 1; index < _queue.Count; index++)
         {
-            if (_queue[index].Priority >= _queue[highPriorityIndex].Priority)
+            // Use > instead of >= to maintain FIFO order when priorities are equal
+            // This keeps the first item found with the highest priority
+            if (_queue[index].Priority > _queue[highPriorityIndex].Priority)
                 highPriorityIndex = index;
         }
 
         // Remove and return the item with the highest priority
         var value = _queue[highPriorityIndex].Value;
+        _queue.RemoveAt(highPriorityIndex);
         return value;
     }
 

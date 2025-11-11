@@ -22,7 +22,32 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        var wordSet = new HashSet<string>(words);
+        var pairs = new List<string>();
+        var addedPairs = new HashSet<string>();
+        
+        foreach (var word in words)
+        {
+            // Skip if both letters are the same (e.g., "aa")
+            if (word[0] == word[1])
+            {
+                continue;
+            }
+            
+            // Create the reverse of the word
+            var reversed = new string(new char[] { word[1], word[0] });
+            
+            // Check if the reversed word exists in the set and we haven't added this pair yet
+            if (wordSet.Contains(reversed) && !addedPairs.Contains(word) && !addedPairs.Contains(reversed))
+            {
+                // Add both words to the addedPairs set to avoid duplicates
+                addedPairs.Add(word);
+                addedPairs.Add(reversed);
+                pairs.Add($"{reversed} & {word}");
+            }
+        }
+        
+        return pairs.ToArray();
     }
 
     /// <summary>
@@ -43,6 +68,18 @@ public static class SetsAndMaps
         {
             var fields = line.Split(",");
             // TODO Problem 2 - ADD YOUR CODE HERE
+            if (fields.Length > 3)
+            {
+                var degree = fields[3].Trim();
+                if (degrees.ContainsKey(degree))
+                {
+                    degrees[degree]++;
+                }
+                else
+                {
+                    degrees[degree] = 1;
+                }
+            }
         }
 
         return degrees;
@@ -67,7 +104,59 @@ public static class SetsAndMaps
     public static bool IsAnagram(string word1, string word2)
     {
         // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+        // Remove spaces and convert to lowercase
+        var cleanWord1 = word1.Replace(" ", "").ToLower();
+        var cleanWord2 = word2.Replace(" ", "").ToLower();
+        
+        // If lengths are different, they can't be anagrams
+        if (cleanWord1.Length != cleanWord2.Length)
+        {
+            return false;
+        }
+        
+        // Count character frequencies in word1
+        var charCount1 = new Dictionary<char, int>();
+        foreach (char c in cleanWord1)
+        {
+            if (charCount1.ContainsKey(c))
+            {
+                charCount1[c]++;
+            }
+            else
+            {
+                charCount1[c] = 1;
+            }
+        }
+        
+        // Count character frequencies in word2
+        var charCount2 = new Dictionary<char, int>();
+        foreach (char c in cleanWord2)
+        {
+            if (charCount2.ContainsKey(c))
+            {
+                charCount2[c]++;
+            }
+            else
+            {
+                charCount2[c] = 1;
+            }
+        }
+        
+        // Compare character frequencies
+        if (charCount1.Count != charCount2.Count)
+        {
+            return false;
+        }
+        
+        foreach (var kvp in charCount1)
+        {
+            if (!charCount2.ContainsKey(kvp.Key) || charCount2[kvp.Key] != kvp.Value)
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
     /// <summary>
@@ -101,6 +190,20 @@ public static class SetsAndMaps
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
         // 3. Return an array of these string descriptions.
-        return [];
+        if (featureCollection == null || featureCollection.Features == null)
+        {
+            return Array.Empty<string>();
+        }
+        
+        var summaries = new List<string>();
+        foreach (var feature in featureCollection.Features)
+        {
+            if (feature?.Properties != null)
+            {
+                summaries.Add($"{feature.Properties.Place} - Mag {feature.Properties.Mag}");
+            }
+        }
+        
+        return summaries.ToArray();
     }
 }

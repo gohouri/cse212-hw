@@ -24,13 +24,20 @@ public static class SetsAndMaps
         // TODO Problem 1 - ADD YOUR CODE HERE
         var wordSet = new HashSet<string>(words);
         var pairs = new List<string>();
-        var addedPairs = new HashSet<string>();
+        var processed = new HashSet<string>();
         
         foreach (var word in words)
         {
+            // Skip if already processed
+            if (processed.Contains(word))
+            {
+                continue;
+            }
+            
             // Skip if both letters are the same (e.g., "aa")
             if (word[0] == word[1])
             {
+                processed.Add(word);
                 continue;
             }
             
@@ -38,12 +45,17 @@ public static class SetsAndMaps
             var reversed = new string(new char[] { word[1], word[0] });
             
             // Check if the reversed word exists in the set and we haven't added this pair yet
-            if (wordSet.Contains(reversed) && !addedPairs.Contains(word) && !addedPairs.Contains(reversed))
+            if (wordSet.Contains(reversed) && !processed.Contains(reversed))
             {
-                // Add both words to the addedPairs set to avoid duplicates
-                addedPairs.Add(word);
-                addedPairs.Add(reversed);
+                // Add both words to the processed set to avoid duplicates
+                processed.Add(word);
+                processed.Add(reversed);
                 pairs.Add($"{reversed} & {word}");
+            }
+            else
+            {
+                // Mark as processed even if no pair found
+                processed.Add(word);
             }
         }
         
@@ -198,9 +210,9 @@ public static class SetsAndMaps
         var summaries = new List<string>();
         foreach (var feature in featureCollection.Features)
         {
-            if (feature?.Properties != null)
+            if (feature?.Properties != null && feature.Properties.Mag.HasValue)
             {
-                summaries.Add($"{feature.Properties.Place} - Mag {feature.Properties.Mag}");
+                summaries.Add($"{feature.Properties.Place} - Mag {feature.Properties.Mag.Value}");
             }
         }
         
